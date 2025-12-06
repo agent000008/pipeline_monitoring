@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Start Gazebo with empty world (or your pipeline world) -->
+    <arg name="world" default="empty"/>
+    
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find pipeline_monitoring)/worlds/pipeline_world.world"/>
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+    
+    <!-- Spawn Clover from clover package -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find clover_description)/urdf/clover.xacro'"/>
+    
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
+        args="-param robot_description -urdf -model clover -x 0 -y 0 -z 0.5"/>
+    
+    <!-- Start ROS controllers -->
+    <include file="$(find clover)/launch/controllers.launch"/>
+</launch>

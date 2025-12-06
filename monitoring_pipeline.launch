@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Включение Gazebo с пустым миром -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+        <arg name="verbose" value="true"/>
+    </include>
+
+    <!-- Загрузка модели Clover в Gazebo -->
+    <include file="$(find clover_simulation)/launch/spawn_drone.launch">
+        <arg name="drone_type" value="clover4"/>
+        <arg name="x" value="0"/>
+        <arg name="y" value="0"/>
+        <arg name="z" value="0.5"/>
+        <arg name="yaw" value="0"/>
+    </include>
+
+    <!-- Запуск ArUco карты для навигации -->
+    <include file="$(find aruco_pose)/launch/aruco.launch">
+        <arg name="map" value="$(find aruco_pose)/map/map.yaml"/>
+        <arg name="cam_info_url" value="package://clover_simulation/res/fisheye_camera_info.yaml"/>
+        <arg name="rviz" value="false"/>
+    </include>
+
+    <!-- Запуск навигации Clover -->
+    <include file="$(find clover_navigation)/launch/simple_offboard.launch">
+        <arg name="target_frame_id" value="aruco_map"/>
+    </include>
+
+    <!-- Запуск нашего скрипта генерации мира -->
+    <node name="generate_pipeline_world" pkg="your_package_name" type="generate_world.py" output="screen"/>
+</launch>

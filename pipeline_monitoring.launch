@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Start Gazebo with ArUco world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find clover_simulation)/worlds/clover_aruco.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+    <arg name="verbose" value="true"/>
+  </include>
+
+  <!-- Spawn Clover drone -->
+  <include file="$(find clover_simulation)/launch/spawn_drone.launch">
+    <arg name="x" value="0"/>
+    <arg name="y" value="0"/>
+    <arg name="z" value="0.5"/>
+    <arg name="yaw" value="0"/>
+  </include>
+
+  <!-- Start ArUco map detection -->
+  <include file="$(find aruco_pose)/launch/aruco.launch">
+    <arg name="map" value="$(find aruco_pose)/map/map.yaml"/>
+  </include>
+
+  <!-- Start navigation -->
+  <include file="$(find clover_navigation)/launch/simple_offboard.launch"/>
+
+  <!-- Generate pipeline world (after 10 seconds) -->
+  <node name="pipeline_generator" pkg="pipeline_monitoring" type="generate_world.py" 
+        output="screen" launch-prefix="bash -c 'sleep 10; $0 $@'"/>
+</launch>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find clover_simulation)/worlds/clover_aruco.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <node name="spawn_clover" pkg="gazebo_ros" type="spawn_model" 
+        args="-file $(find clover_description)/urdf/clover/clover4.xacro -urdf -model clover -x 1 -y 1 -z 0.5" 
+        output="screen"/>
+
+  <node name="generate_pipeline" pkg="pipeline_monitoring" type="generate_world.py" 
+        output="screen" launch-prefix="bash -c 'sleep 5; $0 $@'"/>
+</launch>

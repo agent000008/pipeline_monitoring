@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <param name="robot_description" 
+         command="$(find xacro)/xacro '$(find clover_description)/urdf/clover/clover4.xacro' simulation:=true" />
+  
+  <node name="spawn_clover" pkg="gazebo_ros" type="spawn_model" 
+        args="-param robot_description -urdf -model clover -x 1 -y 1 -z 0.5" 
+        output="screen"/>
+
+  <node name="generate_pipeline" pkg="pipeline_monitoring" type="generate_world.py" 
+        output="screen" launch-prefix="bash -c 'sleep 5; $0 $@'"/>
+
+  <node name="create_aruco_field" pkg="pipeline_monitoring" type="create_aruco_field.py" 
+        output="screen" launch-prefix="bash -c 'sleep 7; $0 $@'"/>
+</launch>

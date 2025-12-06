@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="world" default="empty"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <node name="spawn_clover" pkg="pipeline_monitoring" type="spawn_clover_fixed.py" 
+        output="screen" launch-prefix="bash -c 'sleep 8; $0 $@'"/>
+
+  <node name="generate_pipeline" pkg="pipeline_monitoring" type="generate_world.py" 
+        output="screen" launch-prefix="bash -c 'sleep 10; $0 $@'"/>
+
+  <node name="create_aruco" pkg="pipeline_monitoring" type="use_real_aruco_models_fixed.py" 
+        output="screen" launch-prefix="bash -c 'sleep 13; $0 $@'"/>
+
+  <node name="aruco_detect" pkg="aruco_pose" type="aruco_detect" 
+        launch-prefix="bash -c 'sleep 15; $0 $@'">
+    <param name="map" value="$(find pipeline_monitoring)/map/aruco_7x7_fixed.yaml"/>
+    <param name="camera_frame" value="main_camera_optical"/>
+    <param name="target_frame" value="aruco_map"/>
+  </node>
+
+  <node name="simple_offboard" pkg="clover_navigation" type="simple_offboard" 
+        launch-prefix="bash -c 'sleep 17; $0 $@'">
+    <param name="target_frame_id" value="aruco_map"/>
+  </node>
+</launch>
